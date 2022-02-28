@@ -1,0 +1,31 @@
+version: '3.1'
+
+services:
+  db:
+    container_name: postgres_gitmarx
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    networks:
+      - development_network
+    environment: 
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+  
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - 80:80
+    networks:
+      - development_network
+    environment: 
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+      
+
+networks: 
+  development_network:
+    name: development_network
+    driver: bridge

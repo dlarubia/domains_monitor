@@ -1,0 +1,1 @@
+# Coletar domínios adquiridos no bhd
