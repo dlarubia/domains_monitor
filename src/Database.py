@@ -1,4 +1,3 @@
-from nbformat import read
 import psycopg2
 from psycopg2 import extensions, sql
 # from config import config
@@ -21,12 +20,14 @@ class Database:
         conn.set_isolation_level(autocommit)
         return conn.cursor(), conn
 
-    def execute_query(self, query, user_input=""):
+    def execute_query(self, query, user_input=[]):
         query_result = None
         try:
             cursor, conn = self.connect()
             cursor.execute(query, user_input)
             query_result = cursor.fetchall()
+            if query_result == []:
+                query_result = None
         except Exception as e:
             # TODO
             print(e) # Escrever log em arquivo posteriormente
@@ -54,8 +55,8 @@ class Database:
         autocommit = extensions.ISOLATION_LEVEL_AUTOCOMMIT
         conn.set_isolation_level(autocommit)
         cursor = conn.cursor()
-        query = "CREATE DATABASE " + self.db_name  # sql injection
-        cursor.execute(query)
+        query = "CREATE DATABASE {}"
+        cursor.execute(sql.SQL(query).format(sql.Identifier(self.db_name)))
         cursor.close()
         conn.close()
 

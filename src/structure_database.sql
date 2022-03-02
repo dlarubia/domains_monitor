@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS registrar (
+CREATE TABLE IF NOT EXISTS registrars (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255),
     rid VARCHAR(100),
@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS registrar (
     phone VARCHAR(255)
 );
 
-CREATE TABLE IF NOT EXISTS registrant (
+CREATE TABLE IF NOT EXISTS registrants (
     id SERIAL PRIMARY KEY, 
     name VARCHAR(255),
     rid VARCHAR(100), -- CPF ou CPNJ ou Código estrangeiro
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS registrant (
     nexus_category VARCHAR(255)
     );
     
-CREATE TABLE IF NOT EXISTS admin (
+CREATE TABLE IF NOT EXISTS admins (
     id SERIAL PRIMARY KEY, 
     name VARCHAR(255),
     rid VARCHAR(100), -- CPF ou CPNJ ou Código estrangeiro
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS admin (
     );
 
     
-CREATE TABLE IF NOT EXISTS tech (
+CREATE TABLE IF NOT EXISTS techs (
     id SERIAL PRIMARY KEY, 
     name VARCHAR(255),
     rid VARCHAR(100), -- CPF ou CPNJ ou Código estrangeiro
@@ -63,21 +63,21 @@ CREATE TABLE IF NOT EXISTS tech (
    
         
 CREATE TABLE IF NOT EXISTS domains (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255),
+    id SERIAL,
+    name VARCHAR(255) PRIMARY KEY,
     
     registrar_id INT,
         FOREIGN KEY (registrar_id)
-            REFERENCES registrar(id),
+            REFERENCES registrars(id),
     registrant_id INT,
         FOREIGN KEY (registrant_id)
-            REFERENCES registrant(id),
+            REFERENCES registrants(id),
     admin_id INT,
         FOREIGN KEY (admin_id)
-            REFERENCES admin(id),
+            REFERENCES admins(id),
     tech_id INT,
         FOREIGN KEY (tech_id)
-            REFERENCES tech(id),
+            REFERENCES techs(id),
     
     saci BOOLEAN,
     name_servers TEXT,
@@ -96,16 +96,16 @@ CREATE TABLE IF NOT EXISTS domains_history (
     
     registrar_id INT,
         FOREIGN KEY (registrar_id)
-            REFERENCES registrar(id),
+            REFERENCES registrars(id),
     registrant_id INT,
         FOREIGN KEY (registrant_id)
-            REFERENCES registrant(id),
+            REFERENCES registrants(id),
     admin_id INT,
         FOREIGN KEY (admin_id)
-            REFERENCES admin(id),
+            REFERENCES admins(id),
     tech_id INT,
         FOREIGN KEY (tech_id)
-            REFERENCES tech(id),
+            REFERENCES techs(id),
     
     saci BOOLEAN,
     name_servers TEXT,
