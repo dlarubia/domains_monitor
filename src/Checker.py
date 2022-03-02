@@ -1,10 +1,29 @@
 # Realizar whois e checar informações do domínio, adicionando à Database
 import whois as who
 import json
-import src.Database as Database
 import pandas as pd
+import src.queries as queries
+
 
 class Checker:
+    # domains_all_fields = {
+    #     'domain_name' : None,
+    #     'registrar' : None,
+    #     'whois_server' : None,
+    #     'updated_date' : None,
+    #     'creation_date' : None,
+    #     'expiration_date' : None,
+    #     'name_servers' : None,
+    #     'status' : None,
+    #     'emails' : None,
+    #     'saci' : None,
+    #     'org' : None,
+    #     'address' : None,
+    #     'city' : None,
+    #     'state' : None,
+    #     'zipcode' : None,
+        
+    # }
     
     def __init__(self, database = None, domains_txt = 'teste_dom.txt', first_time = False):
         self.domains = {}
@@ -25,6 +44,8 @@ class Checker:
                 elif line == "\n":
                     continue
                 self.domains[provider][line.strip()] = None
+                if database:
+                    self.database = database
         else:
             self.database = database
             domain_list = self.database.execute_query(
@@ -66,6 +87,45 @@ class Checker:
 
 
     def insert_domains_in_database(self):
+        try:
+            for provider in self.domains:
+                for domain_name in self.domains[provider]:
+                    domain = self.domains[provider][domain_name]
+                    registrar_id = self.database.execute_query(queries.select_registrar_id_where_name_equals_to, [domain['registrar']]) if 'registrar' in domain else None
+                    registrant_id = self.database.execute_query(queries.select_registrant_id_where_name_equals_to, [domain['registrant']]) if 'registrant' in domain else None
+                    admin_id = self.database.execute_query(queries.select_admin_id_where_name_equals_to, [domain['admin']]) if 'admin' in domain else None
+                    tech_id = self.database.execute_query(queries.select_tech_id_where_name_equals_to, [domain['tech']]) if 'tech' in domain else None
+                    parsed_data = [
+                        domain_name,
+                        registrar_id,
+                        registrant_id,
+                        admin_id,
+                        tech_id,
+                        domain['saci'] if 'saci' in domain else None,
+                        domain['name_servers'] if 'name_servers' in domain else None,
+                        domain['creation_date'] if 'creation_date' in domain else None,
+                        domain['expiration_date'] if 'expiration_date' in domain else None,
+                        domain['updated_date'] if 'updated_date' in domain else None
+                    ]
+                    print("Executando query")
+                    self.database.execute_query(queries.insert_domain, parsed_data)
+        except Exception as e:
+            print(e)
+
+
+    def insert_registrar(self):
+        pass
+
+    def insert_registrant(self):
+        pass
+    
+    def insert_admin(self):
+        pass
+
+    def insert_tech(self):
+        pass
+
+    def insert_domain(self):
         pass
 
     def check_all_domains_and_update_db(self):
