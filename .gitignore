@@ -3,3 +3,4 @@ domains.json
 dominios.txt
 teste_dom.txt
 .env
+src/config/credentials.py

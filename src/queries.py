@@ -1,14 +1,14 @@
 # ---------- INSERT ---------- #
 
-insert_domain = "INSERT INTO domains (name, registrar_id, registrant_id, admin_id, tech_id, saci, name_servers, creation_date, expiration_date, updated_date) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ON CONFLICT DO NOTHING"
+insert_domain = "INSERT INTO domains (name, registrar_id, registrant_id, admin_c, tech_c, owner_c, billing_c, nic_hdl_br, saci, name_servers, creation_date, expiration_date, updated_date, status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ON CONFLICT DO NOTHING"
 
-insert_admin = "INSERT INTO admin (name, rit, organization, street, city, state_province, postal_code, country, phone, email, application_purpose, nexus_category, created, changed) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+insert_admin = "INSERT INTO admins (name, rid, organization, street, city, state_province, postal_code, country, phone, email, application_purpose, nexus_category, created, changed) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
-insert_registrant = "INSERT INTO registrant (name, rit, organization, street, city, state_province, postal_code, country, phone, email, application_purpose, nexus_category) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+insert_registrant = "INSERT INTO registrants (name, rid, organization, street, city, state_province, postal_code, country, phone, email, application_purpose, nexus_category) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ON CONFLICT DO NOTHING"
 
-insert_registrar = "INSERT INTO registrar (name, rid, url, whois_url, email, phone) VALUES (%s, %s, %s, %s, %s, %s)"
+insert_registrar = "INSERT INTO registrars (name, url, whois_url, email, phone) VALUES (%s, %s, %s, %s, %s) ON CONFLICT DO NOTHING"
 
-insert_tech = "INSERT INTO tech (name, rit, organization, street, city, state_province, postal_code, country, phone, email, application_purpose, nexus_category, created, changed) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+insert_tech = "INSERT INTO techs (name, rid, organization, street, city, state_province, postal_code, country, phone, email, application_purpose, nexus_category, created, changed) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
 
 # ---------- SELECT ---------- #
