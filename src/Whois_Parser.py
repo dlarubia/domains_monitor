@@ -100,18 +100,18 @@ def get_registroBR_data(whois_obj):
 def get_MarkMonitor_data(whois_obj):
     data = {
         "domain" : [ 
-            whois_obj['domain_name'],
-            whois_obj['creation_date'],
-            whois_obj['expiration_date'],
-            whois_obj['name_servers']
+            whois_obj['domain_name'] if 'domain_name' in whois_obj else None,
+            whois_obj['name_servers'] if 'name_servers' in whois_obj else None,
+            whois_obj['creation_date'] if 'creation_date' in whois_obj else None,
+            whois_obj['expiration_date'] if 'expiration_date' in whois_obj else None
         ],
         'registrant' : [ 
-            whois_obj['registrant_name'],
-            whois_obj['registrant_organization']
+            whois_obj['registrant_name'] if 'registrant_name' in whois_obj else None,
+            whois_obj['registrant_organization'] if 'registrant_organization' in whois_obj else None
         ],
         'registrar' : [ 
-            whois_obj['registrar'],
-            whois_obj['registrar_url']
+            whois_obj['registrar'] if 'registrar' in whois_obj else None,
+            whois_obj['registrar_url'] if 'registrar_url' in whois_obj else None
         ]
     }
     return data
