@@ -1,8 +1,8 @@
 version: '3.1'
 
 services:
-  db:
-    container_name: postgres_domains_monitor
+  database:
+    container_name: domains_monitor_postgres
     image: postgres
     restart: always
     ports:
@@ -13,16 +13,29 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
   
   pgadmin:
-    container_name: pgadmin
+    container_name: domains_monitor_pgadmin
     image: dpage/pgadmin4
     restart: always
     ports:
-      - 80:80
+      - 5000:80
     networks:
       - development_network
     environment: 
       - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+
+  grafana:
+    container_name: domains_monitor_grafana
+    image: grafana/grafana
+    restart: always
+    ports:
+      - 3000:3000
+    networks:
+      - development_network
+    environment:
+      - GF_DEFAULT_INSTANCE_NAME=${GRAFANA_DEFAULT_INSTANCE_NAME}
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_DEFAULT_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_DEFAULT_SECURITY_ADMIN_PASSWORD}
       
 
 networks: 
