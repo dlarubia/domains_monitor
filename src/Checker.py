@@ -1,11 +1,10 @@
 # Realizar whois e checar informações do domínio, adicionando à Database
 from operator import contains
 import whois as who
-import json
 import pandas as pd
-import src.queries as queries
-from src.Individual_queries import queries as Q
-from src.Whois_Parser import parser
+from src.Parsers.Individual_queries import queries as Q
+from src.Parsers.Parser import Parser
+
 
 class Checker:
     
@@ -75,7 +74,9 @@ class Checker:
             for domain_name in self.domains[provider]:
                 try:
                     domain = self.domains[provider][domain_name]
-                    parsed_data = parser[provider](domain)
+                    #parsed_data = parser[provider](domain)
+                    parsed_data = Parser(provider, domain).get_structured_data()
+                    # parsed_data = parsed_data.get_structured_data()
                     if parsed_data['domain'][0] == None:
                         parsed_data['domain'][0] = "UNSUPORTED: " + domain_name
                     # Return id if already inserted
@@ -113,12 +114,3 @@ class Checker:
                     return self.database.execute_query(Q['Global']["select_"+item+"_id_by_name"], name)[0][0]
         else:
             return None
-
-# ch = Checker()
-# ch.whois()
-# f = open("new", 'w')
-# f.write(str(ch.domains))
-
-# # js = json.dumps(ch.domains)
-# with open("domains.json", 'w') as json_file:
-#     json.dump(ch.domains, json_file, default=str)
