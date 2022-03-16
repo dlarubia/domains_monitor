@@ -14,11 +14,11 @@ class Parser:
                 if self.data['domain_name'] is not None:
                     self.data['domain_name'] = re.search('([A-Za-z]*(\.[A-Za-z]+)+)', str(self.data['domain_name']))[0].lower()
             self.data['name_servers'] = re.sub("{|}", '', str(self.data['name_servers'])).lower() if 'name_servers' in self.data else None
-            self.data['creation_date'] = Parser.it_is_list_return_first_element(self.data, 'creation_date')
+            self.data['creation_date'] = Parser.if_it_is_list_return_first_element(self.data, 'creation_date')
             if self.data['creation_date'] is not None:
                 self.data['creation_date'] = self.data['creation_date'].date()
             
-            self.data['expiration_date'] = Parser.it_is_list_return_first_element(self.data, 'expiration_date')
+            self.data['expiration_date'] = Parser.if_it_is_list_return_first_element(self.data, 'expiration_date')
             if self.data['expiration_date'] is not None:
                 self.data['expiration_date'] = self.data['expiration_date'].date()
         
@@ -33,15 +33,15 @@ class Parser:
                 if self.data['domain_name'] is not None:
                     self.data['domain_name'] = re.search('([A-Za-z]*(\.[A-Za-z]+)+)', str(self.data['domain_name']))[0].lower()
             self.data['name_server'] = re.sub("{|}", '', str(self.data['name_server'])).lower() if 'name_server' in self.data else None
-            self.data['creation_date'] = Parser.it_is_list_return_first_element(self.data, 'creation_date')
+            self.data['creation_date'] = Parser.if_it_is_list_return_first_element(self.data, 'creation_date')
             if self.data['creation_date'] is not None:
                 self.data['creation_date'] = self.data['creation_date'].date()
             
-            self.data['expiration_date'] = Parser.it_is_list_return_first_element(self.data, 'expiration_date')
+            self.data['expiration_date'] = Parser.if_it_is_list_return_first_element(self.data, 'expiration_date')
             if self.data['expiration_date'] is not None:
                 self.data['expiration_date'] = self.data['expiration_date'].date()
             
-            self.data['updated_date'] = Parser.it_is_list_return_first_element(self.data, 'updated_date')
+            self.data['updated_date'] = Parser.if_it_is_list_return_first_element(self.data, 'updated_date')
             if self.data['updated_date'] is not None:
                 self.data['updated_date'] = self.data['updated_date'].date()
         
@@ -58,15 +58,15 @@ class Parser:
             
             self.data['name_servers'] = re.sub("{|}", '', str(self.data['name_servers'])).lower() if 'name_servers' in self.data else None
             
-            self.data['creation_date'] = Parser.it_is_list_return_first_element(self.data, 'creation_date')
+            self.data['creation_date'] = Parser.if_it_is_list_return_first_element(self.data, 'creation_date')
             if self.data['creation_date'] is not None:
                 self.data['creation_date'] = self.data['creation_date'].date()
             
-            self.data['expiration_date'] = Parser.it_is_list_return_first_element(self.data, 'expiration_date')
+            self.data['expiration_date'] = Parser.if_it_is_list_return_first_element(self.data, 'expiration_date')
             if self.data['expiration_date'] is not None:
                 self.data['expiration_date'] = self.data['expiration_date'].date()
             
-            self.data['updated_date'] = Parser.it_is_list_return_first_element(self.data, 'updated_date')
+            self.data['updated_date'] = Parser.if_it_is_list_return_first_element(self.data, 'updated_date')
             if self.data['updated_date'] is not None:
                 self.data['updated_date'] = self.data['updated_date'].date()
                 
@@ -84,7 +84,7 @@ class Parser:
     def get_structured_data(self):
         return whois_parser[self.registrar](self.domain.data)
 
-    def it_is_list_return_first_element(object, attribute):
+    def if_it_is_list_return_first_element(object, attribute):
         if hasattr(object, attribute):
                 if isinstance(object[attribute], list):
                     return object[attribute][0]
