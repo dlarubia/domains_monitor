@@ -117,9 +117,7 @@ def get_MarkMonitor_data(whois_obj):
     return data
 
 
-
-
-parser = {
+whois_parser = {
     "GoDaddy" : get_godaddy_data,
 
     "RegistroBR" : get_registroBR_data,
