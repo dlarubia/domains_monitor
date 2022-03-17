@@ -12,7 +12,7 @@ class Parser:
             # Domain
             if hasattr(self.data, 'domain_name'):
                 if self.data['domain_name'] is not None:
-                    self.data['domain_name'] = re.search('([A-Za-z]*(\.[A-Za-z]+)+)', str(self.data['domain_name']))[0].lower()
+                    self.data['domain_name'] = re.search('(([A-Za-z]|[0-9])*(\.[A-Za-z]+)+)', str(self.data['domain_name']))[0].lower()
             self.data['name_servers'] = re.sub("{|}", '', str(self.data['name_servers'])).lower() if 'name_servers' in self.data else None
             self.data['creation_date'] = Parser.if_it_is_list_return_first_element(self.data, 'creation_date')
             if self.data['creation_date'] is not None:
