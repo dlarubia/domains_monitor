@@ -2,39 +2,45 @@
 from operator import contains
 import whois as who
 import pandas as pd
+from os import listdir
+from os.path import isfile, join
+import re
 from src.Parsers.Individual_queries import queries as Q
 from src.Parsers.Parser import Parser
 
 
 class Checker:
-    
-    def __init__(self, database = None, domains_txt = 'dominios.txt', first_time = False):
+
+    def __init__(self, database = None, first_time = False, domains_folder = 'domains'):
         self.domains = {}
         # If is the first insert, is necessary a input with file - then database will be populated
         if not database or first_time:
             #f = open('dominios.txt', 'r')
-            if domains_txt:
-                f = open(domains_txt, 'r')
+            if domains_folder:
+                filenames = [f for f in listdir('domains') if isfile(join('domains', f))]
+                files = []
+                for file in filenames:
+                    files.append(open(domains_folder + '/' + file, 'r'))
             else:
                 print("ERROR: Provide a database or txt file with domains to check")
                 return
 
-            for line in f:
-                if '[' and ']' in line:
-                    provider = line.strip().strip('[').strip(']')
-                    self.domains[provider] = {}
-                    continue
-                elif line == "\n":
-                    continue
-                self.domains[provider][line.strip()] = None
-                if database:
-                    self.database = database
+            for f in files:
+                provider = re.sub('[a-z]*\/', '', re.sub('\.[a-z]*', '', f.name)) # Clean provider name
+                self.domains[provider] = {}
+                for line in f:
+                    if line == "\n":
+                        continue
+                    self.domains[provider][line.strip()] = None   # Defining domain in dict of providers
+            if database:  # If its the first time and there is a database to perform actions
+                self.database = database
+
         else:
             self.database = database
-            domain_list = self.database.execute_query(
-                "select domains.name, registrar.name from domains INNER JOIN registrar ON registrar_id = registrar.id;")
+            domain_list = self.database.execute_query(Q['Global']['select_domains_with_provider'])
             for domain, provider in domain_list:
                 self.domains[provider][domain] = None
+
     
     # Get whois information for the domains
     def whois(self):
@@ -48,7 +54,6 @@ class Checker:
                     # print(informations)
                     self.domains[provider][domain] = informations
                 except Exception as e:
-                    print(e)
                     self.domains[provider][domain] = "Error - " + str(e)
 
 
@@ -71,6 +76,9 @@ class Checker:
 
     def insert_domains_in_database(self):
         for provider in self.domains:
+            # Insert provider em database and get id
+            self.database.execute_query(Q['Global']['insert_provider'], [provider])
+            provider_id = self.database.execute_query(Q['Global']['select_provider_id_by_name'], [provider])[0][0]
             for domain_name in self.domains[provider]:
                 try:
                     domain = self.domains[provider][domain_name]
@@ -84,21 +92,21 @@ class Checker:
                     registrant_id = self.insert_("registrant", provider, parsed_data)
                     admin_id = self.insert_("admin", provider, parsed_data)
                     tech_id = self.insert_("tech", provider, parsed_data)
-                    print([registrar_id, registrant_id, admin_id, tech_id, domain_name])
+                    # print([registrar_id, registrant_id, admin_id, tech_id, domain_name])
                     # Inserting domain
                     self.database.execute_query(Q[provider]['insert_domain'], parsed_data['domain'])
                     # Update Foreign Keys
-                    self.database.execute_query(Q['Global']['update_domain_keys'], [registrar_id, registrant_id, admin_id, tech_id, domain_name])
+                    self.database.execute_query(Q['Global']['update_domain_keys'], [provider_id, registrar_id, registrant_id, admin_id, tech_id, parsed_data['domain'][0]])
 
                 except Exception as e:
                     if "Error" in domain:
-                        invalid_domain = ["INVALID: " + domain_name]
-                        self.database.execute_query(Q['Global']['insert_invalid_domain'], invalid_domain)
+                        invalid_domain = "INVALID: " + domain_name
+                        self.database.execute_query(Q['Global']['insert_invalid_domain'], [invalid_domain, provider_id])
                     if hasattr(domain, 'text'):
                         if domain.text == "Socket not responding" or "Error trying to connect" in domain.text:
-                            invalid_domain = ["ERROR: " + domain_name]
-                            self.database.execute_query(Q['Global']['insert_invalid_domain'], invalid_domain)
-                    print(e)
+                            error_domain = ["ERROR: " + domain_name]
+                            self.database.execute_query(Q['Global']['insert_invalid_domain'], [error_domain, provider_id])
+                    print('Exception when inserting ' + domain_name + ' into database: ' + str(e))
 
     def check_all_domains_and_update_db(self):
         self.whois()
