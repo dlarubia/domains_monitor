@@ -25,27 +25,29 @@ class Database:
         try:
             cursor, conn = self.connect()
             cursor.execute(query, user_input)
-            query_result = cursor.fetchall()
-            if query_result == []:
+            if cursor.rowcount > 0:
+                if cursor.statusmessage != 'UPDATE 1' and cursor.statusmessage != 'INSERT 0 1':  # improve it later 
+                    query_result = cursor.fetchall()
+            else:
                 query_result = None
         except Exception as e:
             # TODO
-            print(e) # Escrever log em arquivo posteriormente
+            print('Exception during query execution: ' + str(e)) # Escrever log em arquivo posteriormente
         finally:
             cursor.close()
             conn.close()
         return query_result
 
     def checkIfDatabaseExists(self):
-        print("Checking if database exists...")
+        print("Checking if database '" + self.db_name + "' exists...")
         try:
             cursor, conn = self.connect()
             print("Database already exist.")
             conn.close()
             # TODO -> Verificar a necessidade de manter essa chamada de função caso a database já exista
-            self.structure_database()
+            # self.structure_database()
         except Exception as e:
-            print(e)
+            # print(e)
             print("Database doesnt exist. Creating...")
             self.createDatabase()
             self.structure_database()
@@ -62,7 +64,8 @@ class Database:
 
     # Lê o arquivo que contém a estrutura para criação do banco de dados e executa
     def structure_database(self):
-        print("Creating tables in " + self.db_name + " if doesnt exists...")
+        # print("Creating tables in " + self.db_name + " if doesnt exists...")
+        print("Creating tables in " + self.db_name + "...")
         f = open(self.sql_script, 'r')
         query = f.read()
         self.execute_query(query)
