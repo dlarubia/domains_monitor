@@ -5,4 +5,3 @@
 - [ ] - Limpeza dos prints e outputs na tela
 - [ ] - Geração de logs para facilitar o debug
 - [ ] - Sanitização de dados (tentar identificar duplicação)
-- [ ] - 
