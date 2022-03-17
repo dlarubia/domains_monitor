@@ -61,10 +61,18 @@ CREATE TABLE IF NOT EXISTS techs (
     -- changed VARCHAR(100)
     );
    
-        
+
+CREATE TABLE IF NOT EXISTS providers (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) UNIQUE NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS domains (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) UNIQUE NOT NULL,
+    provider_id INT,
+        FOREIGN KEY (provider_id)
+            REFERENCES providers(id),
     did VARCHAR(50),
     
     registrar_id INT,
@@ -96,6 +104,9 @@ CREATE TABLE IF NOT EXISTS domains_history (
     operation VARCHAR(20),
 
     name VARCHAR(255),
+    provider_id INT,
+        FOREIGN KEY (provider_id)
+            REFERENCES providers(id),
     did VARCHAR(50),
     
     registrar_id INT,
@@ -124,10 +135,10 @@ CREATE OR REPLACE FUNCTION copy_domain_info() RETURNS trigger AS
     $$
         BEGIN
             INSERT INTO domains_history
-                (operation, name, did, registrar_id, registrant_id, admin_id, tech_id, saci,
+                (operation, name, provider_id, did, registrar_id, registrant_id, admin_id, tech_id, saci,
                 name_servers, creation_date, expiration_date, updated_date, status, email)
             VALUES
-                ('UPDATE', OLD.name, OLD.id, OLD.registrar_id, OLD.registrant_id, OLD.admin_id, OLD.tech_id, OLD.saci,
+                ('UPDATE', OLD.name, OLD.provider_id, OLD.id, OLD.registrar_id, OLD.registrant_id, OLD.admin_id, OLD.tech_id, OLD.saci,
                 OLD.name_servers, OLD.creation_date, OLD.expiration_date, OLD.updated_date, OLD.status, OLD.email);
             RETURN OLD;
         END;
