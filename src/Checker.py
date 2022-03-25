@@ -49,8 +49,8 @@ class Checker:
             for i, domain in enumerate(self.domains[provider]):
                 try:
                     # TODO -> checar se houveram alterações e atualizar o banco de dados, caso tenha ocorrido
-                    informations = who.whois(domain)
                     print("WhoIs (" + str(i+1) + "/" + str(total) + ") --> " + domain)
+                    informations = who.whois(domain)
                     # print(informations)
                     self.domains[provider][domain] = informations
                 except Exception as e:
@@ -83,6 +83,8 @@ class Checker:
                 try:
                     domain = self.domains[provider][domain_name]
                     #parsed_data = parser[provider](domain)
+                    if isinstance(domain, str):
+                        raise Exception("Error with domain '" + domain_name + "'")
                     parsed_data = Parser(provider, domain).get_structured_data()
                     # parsed_data = parsed_data.get_structured_data()
                     if parsed_data['domain'][0] == None:
@@ -100,13 +102,13 @@ class Checker:
 
                 except Exception as e:
                     if "Error" in domain:
-                        invalid_domain = "INVALID: " + domain_name
+                        invalid_domain = "UNSUPORTED: " + domain_name
                         self.database.execute_query(Q['Global']['insert_invalid_domain'], [invalid_domain, provider_id])
-                    if hasattr(domain, 'text'):
+                    elif hasattr(domain, 'text'):
                         if domain.text == "Socket not responding" or "Error trying to connect" in domain.text:
                             error_domain = ["ERROR: " + domain_name]
                             self.database.execute_query(Q['Global']['insert_invalid_domain'], [error_domain, provider_id])
-                    print('Exception when inserting ' + domain_name + ' into database: ' + str(e))
+                    print('Exception: ' + str(e) + ' (' + domain_name + ')')
 
     def check_all_domains_and_update_db(self):
         self.whois()
