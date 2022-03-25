@@ -8,3 +8,4 @@
 - [ ] - Corrigir inserções desnecessárias no banco de dados (registrar/registrant/admin/tech/providers)
 - [ ] - Refatorar o parser
 - [ ] - Criar coluna para marcar domínios com erro ou não suportados
+- [ ] - Provisionamento do dashboard (https://grafana.com/docs/grafana/latest/administration/provisioning/)
