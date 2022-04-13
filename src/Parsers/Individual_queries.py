@@ -11,7 +11,7 @@ GLOBAL FIELDS
 ########## GoDaddy ##########
 
 # ---------- INSERT ---------- #
-go_daddy_insert_domain = "INSERT INTO domains (name, did, name_servers, creation_date, expiration_date, updated_date, status) VALUES (%s, %s, %s, %s , %s, %s, %s) ON CONFLICT DO NOTHING"
+go_daddy_insert_domain = "INSERT INTO domains (name, did, name_servers, creation_date, expiration_date, updated_date, status) VALUES (%s, %s, %s, %s , %s, %s, %s) ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name, did = EXCLUDED.did, name_servers = EXCLUDED.name_servers, creation_date = EXCLUDED.creation_date, expiration_date = EXCLUDED.expiration_date, updated_date = EXCLUDED.updated_date, status = EXCLUDED.status"
 
 go_daddy_insert_registrar = "INSERT INTO registrars (name, rid, url, whois_url, email, phone) VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT DO NOTHING"
 
@@ -31,7 +31,7 @@ go_daddy_update_registrar_id_in_domain = 'UPDATE IN domains (registrar_id, regis
 ########## RegistroBR ##########
 
 # ---------- INSERT ---------- #
-registrobr_insert_domain = "INSERT INTO domains (name, saci, name_servers, creation_date, expiration_date, updated_date, status, email) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) ON CONFLICT DO NOTHING"
+registrobr_insert_domain = "INSERT INTO domains (name, saci, name_servers, creation_date, expiration_date, updated_date, status, email) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name, saci = EXCLUDED.saci, name_servers = EXCLUDED.name_servers, creation_date = EXCLUDED.creation_date, expiration_date = EXCLUDED.expiration_date, updated_date = EXCLUDED.updated_date, status = EXCLUDED.status, email = EXCLUDED.email"
 
 registrobr_insert_registrant = "INSERT INTO registrants (name, rid) VALUES (%s, %s) ON CONFLICT DO NOTHING"
 
@@ -45,7 +45,7 @@ registrobr_insert_tech = "INSERT INTO techs (name) VALUES (%s) ON CONFLICT DO NO
 ########## MarkMonitor ##########
 
 # ---------- INSERT ---------- #
-markmonitor_insert_domain = "INSERT INTO domains (name, name_servers, creation_date, expiration_date) VALUES (%s, %s, %s, %s) ON CONFLICT DO NOTHING"
+markmonitor_insert_domain = "INSERT INTO domains (name, name_servers, creation_date, expiration_date) VALUES (%s, %s, %s, %s) ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name, name_servers = EXCLUDED.name_servers, creation_date = EXCLUDED.creation_date, expiration_date = EXCLUDED.expiration_date"
 
 markmonitor_insert_registrant = "INSERT INTO registrants (name, organization) VALUES (%s, %s) ON CONFLICT DO NOTHING"
 
@@ -58,7 +58,7 @@ update_domain_keys = "UPDATE domains SET provider_id = %s, registrar_id = %s, re
 
 insert_provider = "INSERT INTO providers (name) VALUES (%s) ON CONFLICT DO NOTHING"
 
-insert_invalid_domain = "INSERT INTO domains (name, provider_id) VALUES (%s, %s) ON CONFLICT DO NOTHING"
+insert_invalid_domain = "INSERT INTO domains (name, provider_id) VALUES (%s, %s) ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name, provider_id = EXCLUDED.provider_id"
 
 select_provider_id_by_name = "SELECT id FROM providers WHERE name = (%s)"
 
@@ -70,7 +70,9 @@ select_admin_id_by_name = "SELECT id FROM admins WHERE name = %s"
 
 select_tech_id_by_name = "SELECT id FROM techs WHERE name = %s"
 
-select_domains_with_provider = "SELECT domains.name, providers.name FROM domains INNER JOIN providers ON provider_id = providers.id"
+select_domains_with_provider = "select domains.name, providers.name from domains inner join providers on providers.id = domains.provider_id"
+
+remove_domain = "DELETE FROM domains WHERE name LIKE '%%s'"
 
 ## -------- GLOBAL DICTIONARY -------- #
 # TODO -> Review registrars names
@@ -105,6 +107,7 @@ queries = {
         "select_registrant_id_by_name" : select_registrant_id_by_name,
         "select_admin_id_by_name" : select_admin_id_by_name,
         "select_tech_id_by_name" : select_tech_id_by_name,
-        "select_domains_with_provider" : select_domains_with_provider
+        "select_domains_with_provider" : select_domains_with_provider,
+        "remove_domain" : remove_domain
     }
 }
