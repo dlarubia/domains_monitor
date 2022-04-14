@@ -18,7 +18,7 @@ class Checker:
         if not database or first_time:
             #f = open('dominios.txt', 'r')
             if domains_folder:
-                filenames = [f for f in listdir('domains') if isfile(join('domains', f))]
+                filenames = [f for f in listdir(domains_folder) if isfile(join(domains_folder, f))]
                 files = []
                 for file in filenames:
                     files.append(open(domains_folder + '/' + file, 'r'))
@@ -27,7 +27,7 @@ class Checker:
                 return
 
             for f in files:
-                provider = re.sub('[a-z]*\/', '', re.sub('\.[a-z]*', '', f.name)) # Clean provider name
+                provider = re.sub('\/.*\/', '', re.sub('\.[a-z]*', '', f.name)) # Clean provider name
                 self.domains[provider] = {}
                 for line in f:
                     if line == "\n":
@@ -116,11 +116,14 @@ class Checker:
         # Select domains from database and compare with domains list
         domains_in_db = self.database.execute_query(Q['Global']['select_domains_with_provider'])
         all_domains_in_db = []
-        for i in range(len(domains_in_db)):
-            domains_in_db[i] = list(domains_in_db[i])
-            domains_in_db[i][0] = re.sub('[^:]*: ', '', domains_in_db[i][0])
-            all_domains_in_db.append(domains_in_db[i][0])
-
+        if domains_in_db:
+            for i in range(len(domains_in_db)):
+                domains_in_db[i] = list(domains_in_db[i])
+                domains_in_db[i][0] = re.sub('[^:]*: ', '', domains_in_db[i][0])
+                all_domains_in_db.append(domains_in_db[i][0])
+        else:
+            # Change 'domains_in_db' type to a void list instead NoneType
+            domains_in_db = []
         # Domains to be removed of database
         all_domains = []
         for provider in self.domains:
